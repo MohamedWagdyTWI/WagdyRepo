@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .header {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 50px; /* You can adjust this value to make the text bigger */
+        }
+        .circle-button {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background-color: #3498db; /* Blue color by default */
+            color: white;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            margin: auto;
+        }
+
+        .circle-button.success-false {
+            background-color: #2ecc71; /* Green color for success with false */
+        }
+
+        .circle-button.success-true {
+            background-color: #e74c3c; /* Red color for success with true */
+        }
+
+        .circle-button:focus {
+            outline: none;
+        }
+    </style>
+      <script>
+        // API endpoint URL
+        const apiUrl = 'https://nb3ukj70gf.execute-api.eu-north-1.amazonaws.com/default/Wagdyfun';
+
+        // Initial state for microphone status and login status
+        let microphoneStatus = false;
+        let loginStatus = true;
+
+        // Function to set the color of the button based on the microphone status
+        function setButtonColor(status) {
+            const circleButton = document.querySelector('.circle-button');
+            circleButton.classList.remove('success-false', 'success-true');
+            circleButton.classList.add(status ? 'success-true' : 'success-false');
+        }
+
+        // Function to fetch the initial microphone status from the API on page load
+        async function fetchInitialMicrophoneStatus() {
+            try {
+                const response = await fetch(apiUrl, { mode: 'no-cors' });
+                const data = await response.text();
+                microphoneStatus = data === 'true';
+                setButtonColor(microphoneStatus);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Function to make API request and toggle the microphone status
+        async function makeApiRequest() {
+            try {
+                await fetch(apiUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ microphone_status: microphoneStatus }),
+                });
+                console.log(`Request sent successfully with microphone_status: ${microphoneStatus}`);
+                microphoneStatus = !microphoneStatus;
+                setButtonColor(microphoneStatus);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Function to update the login status on the API
+        async function updateLoginStatus(newValue) {
+            try {
+                await fetch(apiUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ login_status: newValue }),
+                });
+                console.log(`Login status updated to: ${newValue}`);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Fetch the initial login status on page load and update it to true
+        window.addEventListener('load', async () => {
+            await updateLoginStatus(true);
+            console.log('Login status set to true.');
+        });
+
+        // Update the login status to false before the page is closed
+        window.addEventListener('beforeunload', () => {
+            updateLoginStatus(false);
+            console.log('Login status set to false before page close.');
+            navigator.sendBeacon(apiUrl, JSON.stringify({ login_status: false }));
+        });
+
+        // Fetch the initial microphone status on page load
+        fetchInitialMicrophoneStatus();
+    </script>
+</head>
+<body>
+    <div class="header">
+        <h1>TWI EMR system</h1>
+    </div>
+    
+    <button class="circle-button" onclick="makeApiRequest()">API</button>
+</body>
+</html>
