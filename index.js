@@ -79,12 +79,14 @@ window.addEventListener('beforeunload', () => {
     window.addEventListener('visibilitychange', function() {
       if (window.visibilityState === 'hidden') {
         // User switched to another tab or minimized the browser
+          updateLoginStatus(false);
         // Perform actions here, like displaying a message
         console.log('Tab is now hidden');
       } else {
         // User switched back to the tab
         // Perform actions here, like removing the message
         console.log('Tab is now visible');
+          updateLoginStatus(true);
       }
     });
 // Fetch the initial microphone status on page load
