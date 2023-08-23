@@ -76,6 +76,16 @@ window.addEventListener('beforeunload', () => {
     console.log('Login status set to false before page close.');
     navigator.sendBeacon(apiUrl, JSON.stringify({ login_status: false }));
 });
-
+    window.addEventListener('visibilitychange', function() {
+      if (window.visibilityState === 'hidden') {
+        // User switched to another tab or minimized the browser
+        // Perform actions here, like displaying a message
+        console.log('Tab is now hidden');
+      } else {
+        // User switched back to the tab
+        // Perform actions here, like removing the message
+        console.log('Tab is now visible');
+      }
+    });
 // Fetch the initial microphone status on page load
 fetchInitialMicrophoneStatus();
