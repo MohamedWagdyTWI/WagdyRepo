@@ -1,5 +1,5 @@
 // API endpoint URL
-const apiUrl = 'https://nb3ukj70gf.execute-api.eu-north-1.amazonaws.com/default/Wagdyfun';
+const apiUrl = '';
 
 // Initial state for microphone status and login status
 let microphoneStatus = false;
